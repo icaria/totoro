@@ -11,17 +11,84 @@
     <script src='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.js'></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.ba-bbq.min.js') }}"></script>
     <style>
       body { margin:0; padding:0; }
       #map { position:absolute; top:0; bottom:0; width:100%; }
     </style>
 </head>
 <body>
-    <h1>Stephen Chen</h1>
     <div id='map'></div>
     <script>
-        L.mapbox.accessToken = 'pk.eyJ1IjoiaWNhcmlhIiwiYSI6ImNpZjczc3I5cTAyb2dyeWx6Z2Mzanlld3cifQ.jBkG4gWBX37zKjrbkX7SRg';
-        var map = L.mapbox.map('map', 'icaria.cif73spzl02orshlz4eep3nfq').setView([43.654, -79.381], 14);
+
+        var config = {
+            apiKey: 'IUEZ42RZ5SAY4J0E0TOHB34R15GW2RRV2OQUQNXQIKYONHPN',
+            authUrl: 'https://foursquare.com/',
+            apiUrl: 'https://api.foursquare.com/'
+        };
+
+        function doAuthRedirect() {
+            var redirect = window.location.href.replace(window.location.hash, '');
+            var url = config.authUrl + 'oauth2/authenticate?response_type=token&client_id=' + config.apiKey +
+                '&redirect_uri=' + encodeURIComponent(redirect) +
+                '&state=' + encodeURIComponent($.bbq.getState('req') || 'users/self');
+            window.location.href = url;
+        }
+
+        function getCurrentDate() {
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+
+            if(dd < 10) {
+                dd = '0' + dd
+            }
+            if(mm < 10) {
+                mm = '0' + mm
+            }
+            return yyyy + mm + dd;
+        }
+
+        if ($.bbq.getState('access_token')) {
+            // If there is a token in the state, consume it
+            var token = $.bbq.getState('access_token');
+            $.bbq.pushState({}, 2)
+        } else if ($.bbq.getState('error')) {
+        } else {
+            doAuthRedirect();
+        }
+
+        $.getJSON(config.apiUrl + 'v2/users/self/checkins?oauth_token=' + window.token + '&limit=1&sort=newestfirst&v=' + getCurrentDate(), {}, function(data) {
+            checkin = data['response']['checkins']['items'][0];
+            venue = checkin['venue'];
+            latitude = venue['location']['lat'];
+            longitude = venue['location']['lng'];
+
+            L.mapbox.accessToken = 'pk.eyJ1IjoiaWNhcmlhIiwiYSI6ImNpZjczc3I5cTAyb2dyeWx6Z2Mzanlld3cifQ.jBkG4gWBX37zKjrbkX7SRg';
+            var map = L.mapbox.map('map', 'mapbox.streets').setView([latitude, longitude], 14);
+            L.mapbox.featureLayer({
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [
+                        longitude,
+                        latitude
+                    ]
+                },
+                properties: {
+                    "icon" : {
+                        "iconUrl": "{{ url_for('static', filename='css/images/face.jpg') }}",
+                        "iconSize": [50, 50], // size of the icon
+                        "className": "img-circle"
+                    },
+                    'description': '<b>LAST SEEN AT</b><br>' + venue['name'],
+                    'marker-size': 'medium',
+                    'marker-symbol': 'embassy'
+                }
+            }).addTo(map);
+        })
     </script>
+
 </body>
 </html>
