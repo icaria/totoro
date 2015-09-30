@@ -1,32 +1,27 @@
 <!DOCTYPE html>
+<html>
 <head>
+    <meta charset=utf-8 />
     <title>Flaskr</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}"/>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.4.min.js') }}"></script>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <link href='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.css' rel='stylesheet' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <script src='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.js'></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <style>
+      body { margin:0; padding:0; }
+      #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
 </head>
 <body>
     <h1>Stephen Chen</h1>
-    <form>
-        <div class="form-group">
-            <label for="exampleInputEmail1">Email address</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
-        </div>
-        <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-        </div>
-        <div class="form-group">
-            <label for="exampleInputFile">File input</label>
-            <input type="file" id="exampleInputFile">
-            <p class="help-block">Example block-level help text here.</p>
-        </div>
-        <div class="checkbox">
-            <label>
-                <input type="checkbox"> Check me out
-            </label>
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-    </form>
+    <div id='map'></div>
+    <script>
+        L.mapbox.accessToken = 'pk.eyJ1IjoiaWNhcmlhIiwiYSI6ImNpZjczc3I5cTAyb2dyeWx6Z2Mzanlld3cifQ.jBkG4gWBX37zKjrbkX7SRg';
+        var map = L.mapbox.map('map', 'icaria.cif73spzl02orshlz4eep3nfq').setView([43.654, -79.381], 14);
+    </script>
 </body>
+</html>
