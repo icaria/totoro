@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset=utf-8 />
-    <title>Flaskr</title>
+    <title>Stephen</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
     <link href='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.css' rel='stylesheet' />
@@ -67,7 +67,9 @@
 
             L.mapbox.accessToken = 'pk.eyJ1IjoiaWNhcmlhIiwiYSI6ImNpZjczc3I5cTAyb2dyeWx6Z2Mzanlld3cifQ.jBkG4gWBX37zKjrbkX7SRg';
             var map = L.mapbox.map('map', 'mapbox.streets').setView([latitude, longitude], 14);
-            L.mapbox.featureLayer({
+            var featureLayer = L.mapbox.featureLayer().addTo(map);
+
+            var geoJson = {
                 type: 'Feature',
                 geometry: {
                     type: 'Point',
@@ -86,7 +88,16 @@
                     'marker-size': 'medium',
                     'marker-symbol': 'embassy'
                 }
-            }).addTo(map);
+            };
+
+            featureLayer.on('layeradd', function(e) {
+                var marker = e.layer,
+                        feature = marker.feature;
+
+                marker.setIcon(L.icon(feature.properties.icon));
+            });
+
+            featureLayer.setGeoJSON(geoJson);
         })
     </script>
 
