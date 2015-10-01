@@ -32,7 +32,7 @@
         <a href="{{ url_for('static', filename='Stephen.pdf') }}" class="btn btn-info" role="button" target="_blank">VIEW RÉSUMÉ</a>
     </div>
 
-    <div id='map'></div>
+    <div id='map' onmousedown="return false"></div>
 
     <script>
         var config = {
@@ -80,7 +80,16 @@
             longitude = venue['location']['lng'];
 
             L.mapbox.accessToken = 'pk.eyJ1IjoiaWNhcmlhIiwiYSI6ImNpZjczc3I5cTAyb2dyeWx6Z2Mzanlld3cifQ.jBkG4gWBX37zKjrbkX7SRg';
-            var map = L.mapbox.map('map', 'icaria.cif73spzl02orshlz4eep3nfq').setView([latitude, longitude], 15);
+            var map = L.mapbox.map('map', 'icaria.cif73spzl02orshlz4eep3nfq', {zoomControl: false}).setView([latitude, longitude], 15);
+            map.dragging.disable();
+            map.touchZoom.disable();
+            map.doubleClickZoom.disable();
+            map.scrollWheelZoom.disable();
+
+            if(map.tap) {
+                map.tap.disable();
+            }
+
             var featureLayer = L.mapbox.featureLayer().addTo(map);
 
             var geoJson = {
@@ -110,13 +119,16 @@
                         feature = marker.feature;
 
                 marker.setIcon(L.icon(feature.properties.icon));
+
+                marker.openPopup();
+
+                marker.off('click');
+                marker.on('click', function(e){
+                   this.openPopUp();
+                });
             });
 
             featureLayer.setGeoJSON(geoJson);
-
-            featureLayer.eachLayer(function(m) {
-                m.openPopup();
-            })
         });
 
         window.setInterval(function(){
