@@ -5,23 +5,38 @@
     <title>Stephen Chen, Software Engineer</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
-    <link href='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.css' rel='stylesheet' />
+    <link rel="stylesheet" href='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.css' />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-    <script src='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.js'></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+    <script type="text/javascript" src='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.js'></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.ba-bbq.min.js') }}"></script>
     <style>
       body { margin:0; padding:0; }
-      #map { position:absolute; top:0; bottom:0; left:65%; width:35%; }
+      #map { position:absolute; top:0; bottom:0; left:60%; width:40%; }
+      #body { position:absolute; top:10%; left:10%; width:25%; }
     </style>
 </head>
 <body>
-    <div id='map'></div>
-    <script>
+    <div id="body">
+        <p class="header">Stephen Chen</p>
+        <p class="sub-title">Software Engineer</p>
+        <br><br>
+        <p class="description">Hey there, I’m Stephen. I rapidly design and prototype user interfaces on web and mobile. I aim to bring my passion for tidiness to software.<br><br>Let’s chat about prototyping with Origami, building things with JavaScript, or creating visuals in Photoshop!</p>
+        <br><br>
+        <p class="header">Oracle</p>
+        <p class="sub-title">2013 - present</p>
+        <br><br>
+        <p class="description">For the past two years, I’ve been working with Oracle in Toronto, where I design and build products for our portfolio companies and help to prototype new ones.</p>
+        <br><br>
+        <a href="{{ url_for('static', filename='Stephen.pdf') }}" class="btn btn-info" role="button" target="_blank">VIEW RÉSUMÉ</a>
+    </div>
 
+    <div id='map'></div>
+
+    <script>
         var config = {
             apiKey: 'IUEZ42RZ5SAY4J0E0TOHB34R15GW2RRV2OQUQNXQIKYONHPN',
             authUrl: 'https://foursquare.com/',
@@ -48,7 +63,7 @@
             if(mm < 10) {
                 mm = '0' + mm
             }
-            return yyyy + mm + dd;
+            return yyyy + '' + mm + '' + dd;
         }
 
         if ($.bbq.getState('access_token')) {
@@ -108,12 +123,8 @@
 
         window.setInterval(function(){
             var popup = $(".leaflet-popup-pane");
-            popup.animate({top:'10px'});
+            popup.animate({top:'5px'});
             popup.animate({top:'0px'});
-        }, 100);
-
-        window.setInterval(function(){
-            $(".leaflet-marker-icon").sonar();
         }, 100);
 
     </script>
