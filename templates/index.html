@@ -5,6 +5,7 @@
     <title>Stephen</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
     <link href='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.css' rel='stylesheet' />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
@@ -14,7 +15,7 @@
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.ba-bbq.min.js') }}"></script>
     <style>
       body { margin:0; padding:0; }
-      #map { position:absolute; top:0; bottom:0; width:100%; }
+      #map { position:absolute; top:0; bottom:0; left:65%; width:35%; }
     </style>
 </head>
 <body>
@@ -66,7 +67,7 @@
             longitude = venue['location']['lng'];
 
             L.mapbox.accessToken = 'pk.eyJ1IjoiaWNhcmlhIiwiYSI6ImNpZjczc3I5cTAyb2dyeWx6Z2Mzanlld3cifQ.jBkG4gWBX37zKjrbkX7SRg';
-            var map = L.mapbox.map('map', 'mapbox.streets').setView([latitude, longitude], 14);
+            var map = L.mapbox.map('map', 'icaria.cif73spzl02orshlz4eep3nfq').setView([latitude, longitude], 14);
             var featureLayer = L.mapbox.featureLayer().addTo(map);
 
             var geoJson = {
@@ -81,11 +82,12 @@
                 properties: {
                     "icon" : {
                         "iconUrl": "{{ url_for('static', filename='css/images/face.jpg') }}",
-                        "iconSize": [50, 50], // size of the icon
+                        "iconSize": [60, 60], // size of the icon
+                        "popupAnchor": [0,-40], // point from which the popup should open relative to the iconAnchor
                         "className": "img-circle"
                     },
-                    'description': '<b>LAST SEEN AT</b><br>' + venue['name'],
-                    'marker-size': 'medium',
+                    'description': '<b>LAST SEEN AT:</b><br>' + venue['name'],
+                    'marker-size': 'large',
                     'marker-symbol': 'embassy'
                 }
             };
@@ -98,7 +100,22 @@
             });
 
             featureLayer.setGeoJSON(geoJson);
-        })
+
+            featureLayer.eachLayer(function(m) {
+                m.openPopup();
+            })
+        });
+
+        window.setInterval(function(){
+            var popup = $(".leaflet-popup-pane");
+            popup.animate({top:'10px'});
+            popup.animate({top:'0px'});
+        }, 100);
+
+        window.setInterval(function(){
+            $(".leaflet-marker-icon").sonar();
+        }, 100);
+
     </script>
 
 </body>
