@@ -15,14 +15,10 @@
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.ba-bbq.min.js') }}"></script>
-    <style>
-      body { margin:0; padding:0; }
-      #map { position:absolute; top:0; bottom:0; left:60%; width:40%; }
-      #body { position:absolute; top:10%; left:10%; width:25%; }
-    </style>
 </head>
+
 <body>
-    <div id="body">
+    <div id="content">
         <p class="header">Stephen Chen</p>
         <p class="sub-title">Software Engineer</p>
         <br><br>
@@ -84,7 +80,7 @@
             longitude = venue['location']['lng'];
 
             L.mapbox.accessToken = 'pk.eyJ1IjoiaWNhcmlhIiwiYSI6ImNpZjczc3I5cTAyb2dyeWx6Z2Mzanlld3cifQ.jBkG4gWBX37zKjrbkX7SRg';
-            var map = L.mapbox.map('map', 'icaria.cif73spzl02orshlz4eep3nfq').setView([latitude, longitude], 14);
+            var map = L.mapbox.map('map', 'icaria.cif73spzl02orshlz4eep3nfq').setView([latitude, longitude], 15);
             var featureLayer = L.mapbox.featureLayer().addTo(map);
 
             var geoJson = {
@@ -99,9 +95,9 @@
                 properties: {
                     "icon" : {
                         "iconUrl": "{{ url_for('static', filename='css/images/face.jpg') }}",
-                        "iconSize": [60, 60], // size of the icon
-                        "popupAnchor": [0,-40], // point from which the popup should open relative to the iconAnchor
-                        "className": "img-circle"
+                        "iconSize": [50, 50], // size of the icon
+                        "popupAnchor": [0,-30], // point from which the popup should open relative to the iconAnchor
+                        "className": "img-circle img-thumbnail"
                     },
                     'description': '<b>LAST SEEN AT:</b><br>' + venue['name'],
                     'marker-size': 'large',
@@ -125,8 +121,8 @@
 
         window.setInterval(function(){
             var popup = $(".leaflet-popup-pane");
-            popup.animate({top:'5px'});
-            popup.animate({top:'0px'});
+            popup.animate({top:'5px'}, 500);
+            popup.animate({top:'0px'}, 500);
         }, 100);
 
     </script>
