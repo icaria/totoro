@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
+{% block header %}
 <head>
     <meta charset=utf-8 />
-    <title>Stephen Chen, Software Engineer</title>
+    <title>{{ name }}, {{ title }}</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <link rel="shortcut icon" href="{{ url_for('static', filename='css/images/favicon.ico') }}" type="image/x-icon">
     <link rel="icon" href="{{ url_for('static', filename='css/images/favicon.ico') }}" type="image/x-icon">
@@ -16,22 +17,24 @@
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.ba-bbq.min.js') }}"></script>
 </head>
+{% endblock %}
 
+{% block content %}
 <body>
     <div id="content">
-        <p class="header">Stephen Chen</p>
-        <p class="sub-title">Software Engineer</p>
+        <p class="header">{{ name }}</p>
+        <p class="sub-title">{{ title }}</p>
         <br><br>
         <p class="description">Hey there, I’m Stephen. I rapidly design and prototype web applicatoins on web and mobile.
-            I aim to bring my passion for tidiness to software.<br><br>Let’s chat about designing reusable service oriented architecture,
+            I aim to bring my passion for structure and quality to software.<br><br>Let’s chat about designing reusable service oriented architecture,
             creating scalable and performant business solutions, or simply building great software!</p>
         <br><br>
         <p class="header">Oracle</p>
         <p class="sub-title">2013 - present</p>
         <br><br>
-        <p class="description">For the past two years, I’ve been working with Oracle in Toronto,
-            where I worked on the Infrastructure team to enhance and promote the security implementation for its core marketing cloud product, Eloqua.
-            I have also worked on delivering high profile projects such as Slapchop, Brighten, and Havoc.</p>
+        <p class="description">For the past two years, I’ve been working with Eloqua Oracle in Toronto,
+            where I worked on the Infrastructure team to enhance the security implementation.
+            I have also worked on high profile projects such as Slapchop, Brighten, and Havoc.</p>
         <br><br>
         <a href="{{ url_for('static', filename='Stephen.pdf') }}" class="btn btn-info" role="button" target="_blank">VIEW RÉSUMÉ</a>
     </div>
@@ -39,18 +42,13 @@
     <div id='map' onmousedown="return false"></div>
 
     <script>
-        var config = {
-            apiKey: 'IUEZ42RZ5SAY4J0E0TOHB34R15GW2RRV2OQUQNXQIKYONHPN',
-            authUrl: 'https://foursquare.com/',
-            apiUrl: 'https://api.foursquare.com/'
-        };
 
         function doAuthRedirect() {
             var redirect = window.location.href.replace(window.location.hash, '');
-            var url = config.authUrl + 'oauth2/authenticate?response_type=token&client_id=' + config.apiKey +
-                '&redirect_uri=' + encodeURIComponent(redirect) +
-                '&state=' + encodeURIComponent($.bbq.getState('req') || 'users/self');
-            window.location.href = url;
+            alert(redirect);
+            window.location.href = '{{ keys.foursquare_authentication_url }}oauth2/authenticate?response_type=token&client_id={{ keys.foursquare_client_id }}' +
+                    '&redirect_uri=' + encodeURIComponent(redirect) +
+                    '&state=' + encodeURIComponent($.bbq.getState('req') || 'users/self');
         }
 
         function getCurrentDate() {
@@ -77,14 +75,14 @@
             doAuthRedirect();
         }
 
-        $.getJSON(config.apiUrl + 'v2/users/self/checkins?oauth_token=' + window.token + '&limit=1&sort=newestfirst&v=' + getCurrentDate(), {}, function(data) {
-            checkin = data['response']['checkins']['items'][0];
-            venue = checkin['venue'];
-            latitude = venue['location']['lat'];
-            longitude = venue['location']['lng'];
+        $.getJSON('{{ keys.foursquare_api_url }}v2/users/self/checkins?oauth_token=' + window.token + '&limit=1&sort=newestfirst&v=' + getCurrentDate(), {}, function(data) {
+            var checkin = data['response']['checkins']['items'][0];
+            var venue = checkin['venue'];
+            var latitude = venue['location']['lat'];
+            var longitude = venue['location']['lng'];
 
-            L.mapbox.accessToken = 'pk.eyJ1IjoiaWNhcmlhIiwiYSI6ImNpZjczc3I5cTAyb2dyeWx6Z2Mzanlld3cifQ.jBkG4gWBX37zKjrbkX7SRg';
-            var map = L.mapbox.map('map', 'icaria.cif73spzl02orshlz4eep3nfq', {zoomControl: false}).setView([latitude, longitude], 15);
+            L.mapbox.accessToken = '{{ keys.mapbox_access_token }}';
+            var map = L.mapbox.map('map', '{{ keys.mapbox_map_id }}', {zoomControl: false}).setView([latitude, longitude], 15);
             map.dragging.disable();
             map.touchZoom.disable();
             map.doubleClickZoom.disable();
@@ -144,4 +142,6 @@
     </script>
 
 </body>
+{% endblock %}
+
 </html>
