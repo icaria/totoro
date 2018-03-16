@@ -63,3 +63,5 @@ target/
 bin
 include
 pip-selfcheck.json
+
+.env

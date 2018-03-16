@@ -1,1 +1,1 @@
-web: FLASK_APP=totoro.py flask run
+web: gunicorn totoro:app --log-file=-
