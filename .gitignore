@@ -58,3 +58,8 @@ target/
 
 # Jetbrains
 .idea
+
+# VirtualEnv
+bin
+include
+pip-selfcheck.json
