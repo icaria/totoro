@@ -46,6 +46,8 @@
 
     <script>
 
+        history.replaceState("", document.title, window.location.pathname + window.location.search);
+
         //mapboxgl.accessToken = '{{ keys.mapbox_access_token }}';
 
         L.mapbox.accessToken = '{{ keys.mapbox_access_token }}';

@@ -1,7 +1,6 @@
 import os
-import json
 import foursquare
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, url_for, render_template
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -16,7 +15,8 @@ def index():
     foursquare_access_token = os.environ.get('foursquare_access_token')
 
     if foursquare_access_token is not None:
-        foursquare_client = foursquare.Foursquare(access_token=foursquare_access_token)
+        foursquare_client = foursquare.Foursquare(access_token=foursquare_access_token,
+                                                  redirect_uri=foursquare_redirect_uri)
     else:
         foursquare_client = foursquare.Foursquare(client_id=foursquare_client_id,
                                                   client_secret=foursquare_client_secret,
@@ -52,7 +52,7 @@ def auth():
     foursquare_access_token = foursquare_client.oauth.get_token(foursquare_authorization_code)
 
     os.environ['foursquare_access_token'] = foursquare_access_token
-    return redirect("/")
+    return redirect('/')
 
 
 if __name__ == '__main__':
