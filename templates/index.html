@@ -8,14 +8,12 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='css/images/favicon.ico') }}" type="image/x-icon">
     <link rel="icon" href="{{ url_for('static', filename='css/images/favicon.ico') }}" type="image/x-icon">
 
-    <link rel="stylesheet" href='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.css' />
-    <!--<link rel='stylesheet' href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css'>-->
+    <link rel='stylesheet' href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css'>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
 
-    <script type="text/javascript" src='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.js'></script>
-    <!--<script type="text/javascript" src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>-->
+    <script type="text/javascript" src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.ba-bbq.min.js') }}"></script>
@@ -28,16 +26,15 @@
         <p class="header">{{ name }}</p>
         <p class="sub-title">{{ title }}</p>
         <br><br>
-        <p class="description">Hey there, I’m Stephen. I rapidly design and prototype web applicatoins on web and mobile.
-            I aim to bring my passion for structure and quality to software.<br><br>Let’s chat about designing reusable service oriented architecture,
-            creating scalable and performant business solutions, or simply building great software!</p>
+        <p class="description">Hey there, I’m Stephen. I rapidly design and prototype web applications on web and mobile.
+            I aim to bring my passion for structure and quality to software.<br><br>Let’s chat about service oriented architecture,
+            creating scalable and highly-available business solutions, or simply building great software!</p>
         <br><br>
-        <p class="header">Oracle</p>
-        <p class="sub-title">2013 - present</p>
+        <p class="header">Amazon Web Services</p>
+        <p class="sub-title">2016 - present</p>
         <br><br>
-        <p class="description">For the past two years, I’ve been working with Eloqua Oracle in Toronto,
-            where I worked on the Infrastructure team to enhance the security implementation.
-            I have also worked on high profile projects such as Slapchop, Brighten, and Havoc.</p>
+        <p class="description">For the past few years, I’ve been working with Amazon in Seattle,
+            where I worked in the GuardDuty team to design, integrate, implement and enhance security in the cloud.</p>
         <br><br>
         <a href="{{ url_for('static', filename='Stephen.pdf') }}" class="btn btn-info" role="button" target="_blank">VIEW RÉSUMÉ</a>
     </div>
@@ -48,61 +45,66 @@
 
         history.replaceState("", document.title, window.location.pathname + window.location.search);
 
-        //mapboxgl.accessToken = '{{ keys.mapbox_access_token }}';
+        mapboxgl.accessToken = '{{ keys.mapbox_access_token }}';
 
-        L.mapbox.accessToken = '{{ keys.mapbox_access_token }}';
-        var map = L.mapbox.map('map', '{{ keys.mapbox_map_id }}', {zoomControl: false}).setView([{{ keys.lat }}, {{ keys.lng }}], 15);
-        map.dragging.disable();
-        map.touchZoom.disable();
-        map.doubleClickZoom.disable();
-        map.scrollWheelZoom.disable();
+        var point = new mapboxgl.LngLat({{ keys.lng }}, {{ keys.lat }});
 
-        if(map.tap) {
-            map.tap.disable();
-        }
-
-        var featureLayer = L.mapbox.featureLayer().addTo(map);
-
-        var geoJson = {
-            type: 'Feature',
-            geometry: {
-                type: 'Point',
-                coordinates: [
-                    {{ keys.lng }},
-                    {{ keys.lat }}
-                ]
-            },
-            properties: {
-                "icon" : {
-                    "iconUrl": "{{ url_for('static', filename='css/images/face.jpg') }}",
-                    "iconSize": [50, 50], // size of the icon
-                    "popupAnchor": [0,-30], // point from which the popup should open relative to the iconAnchor
-                    "className": "img-circle img-thumbnail"
-                },
-                'description': '<b>LAST SEEN AT:</b><br>{{ keys.venue }}',
-                'marker-size': 'large',
-                'marker-symbol': 'embassy'
-            }
-        };
-
-        featureLayer.on('layeradd', function(e) {
-            var marker = e.layer,
-            feature = marker.feature;
-
-            marker.setIcon(L.icon(feature.properties.icon));
-
-            marker.openPopup();
-
-            marker.off('click');
-            marker.on('click', function(e){
-               this.openPopUp();
-            });
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/dark-v9',
+            interactive: false,
+            center: point,
+            zoom: 15
         });
 
-        featureLayer.setGeoJSON(geoJson);
+        var geojson = {
+            "type": "FeatureCollection",
+            "features": [{
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        {{ keys.lng }},
+                        {{ keys.lat }}
+                    ]
+                },
+                "properties": {
+                    "iconSize": [50, 50], // size of the icon
+                }
+            }]
+        };
+
+        // add markers to map
+        geojson.features.forEach(function(marker) {
+            // create a DOM element for the marker
+            var el = document.createElement('div');
+            el.className = 'img-circle img-thumbnail';
+            el.style.backgroundImage = "url({{ url_for('static', filename='css/images/face.jpg') }})";
+            el.style.width = marker.properties.iconSize[0] + 'px';
+            el.style.height = marker.properties.iconSize[1] + 'px';
+            el.style.borderWidth = '3px';
+            el.style.borderColor = '#ffffff';
+
+            var popupDiv = window.document.createElement('div');
+            popupDiv.innerHTML = '<b>LAST SEEN AT:</b><br>{{ keys.venue }}';
+
+            // add marker to map
+            new mapboxgl.Marker(el)
+                .setLngLat(point)
+                .addTo(map);
+
+            // create the popup
+            new mapboxgl.Popup({
+                closeButton: false,
+                closeOnClick: false,
+                offset: 30
+            }).setDOMContent(popupDiv)
+                .setLngLat(point)
+                .addTo(map);
+        });
 
         window.setInterval(function(){
-            var popup = $(".leaflet-popup-pane");
+            var popup = $(".mapboxgl-popup");
             popup.animate({top:'5px'}, 500);
             popup.animate({top:'0px'}, 500);
         }, 100);
