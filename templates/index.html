@@ -9,10 +9,13 @@
     <link rel="icon" href="{{ url_for('static', filename='css/images/favicon.ico') }}" type="image/x-icon">
 
     <link rel="stylesheet" href='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.css' />
+    <!--<link rel='stylesheet' href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css'>-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+
     <script type="text/javascript" src='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.js'></script>
+    <!--<script type="text/javascript" src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>-->
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.ba-bbq.min.js') }}"></script>
@@ -43,94 +46,58 @@
 
     <script>
 
-        function doAuthRedirect() {
-            var redirect = window.location.href.replace(window.location.hash, '');
-            window.location.href = '{{ keys.foursquare_authentication_url }}oauth2/authenticate?response_type=token&client_id={{ keys.foursquare_client_id }}' +
-                    '&redirect_uri=' + encodeURIComponent(redirect) +
-                    '&state=' + encodeURIComponent($.bbq.getState('req') || 'users/self');
+        //mapboxgl.accessToken = '{{ keys.mapbox_access_token }}';
+
+        L.mapbox.accessToken = '{{ keys.mapbox_access_token }}';
+        var map = L.mapbox.map('map', '{{ keys.mapbox_map_id }}', {zoomControl: false}).setView([{{ keys.lat }}, {{ keys.lng }}], 15);
+        map.dragging.disable();
+        map.touchZoom.disable();
+        map.doubleClickZoom.disable();
+        map.scrollWheelZoom.disable();
+
+        if(map.tap) {
+            map.tap.disable();
         }
 
-        function getCurrentDate() {
-            var today = new Date();
-            var dd = today.getDate();
-            var mm = today.getMonth()+1; //January is 0!
-            var yyyy = today.getFullYear();
+        var featureLayer = L.mapbox.featureLayer().addTo(map);
 
-            if(dd < 10) {
-                dd = '0' + dd
-            }
-            if(mm < 10) {
-                mm = '0' + mm
-            }
-            return yyyy + '' + mm + '' + dd;
-        }
-
-        if ($.bbq.getState('access_token')) {
-            // If there is a token in the state, consume it
-            var token = $.bbq.getState('access_token');
-            $.bbq.pushState({}, 2)
-        } else if ($.bbq.getState('error')) {
-        } else {
-            doAuthRedirect();
-        }
-
-        $.getJSON('{{ keys.foursquare_api_url }}v2/users/self/checkins?oauth_token=' + window.token + '&limit=1&sort=newestfirst&v=' + getCurrentDate(), {}, function(data) {
-            var checkin = data['response']['checkins']['items'][0];
-            var venue = checkin['venue'];
-            var latitude = venue['location']['lat'];
-            var longitude = venue['location']['lng'];
-
-            L.mapbox.accessToken = '{{ keys.mapbox_access_token }}';
-            var map = L.mapbox.map('map', '{{ keys.mapbox_map_id }}', {zoomControl: false}).setView([latitude, longitude], 15);
-            map.dragging.disable();
-            map.touchZoom.disable();
-            map.doubleClickZoom.disable();
-            map.scrollWheelZoom.disable();
-
-            if(map.tap) {
-                map.tap.disable();
-            }
-
-            var featureLayer = L.mapbox.featureLayer().addTo(map);
-
-            var geoJson = {
-                type: 'Feature',
-                geometry: {
-                    type: 'Point',
-                    coordinates: [
-                        longitude,
-                        latitude
-                    ]
+        var geoJson = {
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: [
+                    {{ keys.lng }},
+                    {{ keys.lat }}
+                ]
+            },
+            properties: {
+                "icon" : {
+                    "iconUrl": "{{ url_for('static', filename='css/images/face.jpg') }}",
+                    "iconSize": [50, 50], // size of the icon
+                    "popupAnchor": [0,-30], // point from which the popup should open relative to the iconAnchor
+                    "className": "img-circle img-thumbnail"
                 },
-                properties: {
-                    "icon" : {
-                        "iconUrl": "{{ url_for('static', filename='css/images/face.jpg') }}",
-                        "iconSize": [50, 50], // size of the icon
-                        "popupAnchor": [0,-30], // point from which the popup should open relative to the iconAnchor
-                        "className": "img-circle img-thumbnail"
-                    },
-                    'description': '<b>LAST SEEN AT:</b><br>' + venue['name'],
-                    'marker-size': 'large',
-                    'marker-symbol': 'embassy'
-                }
-            };
+                'description': '<b>LAST SEEN AT:</b><br>{{ keys.venue }}',
+                'marker-size': 'large',
+                'marker-symbol': 'embassy'
+            }
+        };
 
-            featureLayer.on('layeradd', function(e) {
-                var marker = e.layer,
-                        feature = marker.feature;
+        featureLayer.on('layeradd', function(e) {
+            var marker = e.layer,
+            feature = marker.feature;
 
-                marker.setIcon(L.icon(feature.properties.icon));
+            marker.setIcon(L.icon(feature.properties.icon));
 
-                marker.openPopup();
+            marker.openPopup();
 
-                marker.off('click');
-                marker.on('click', function(e){
-                   this.openPopUp();
-                });
+            marker.off('click');
+            marker.on('click', function(e){
+               this.openPopUp();
             });
-
-            featureLayer.setGeoJSON(geoJson);
         });
+
+        featureLayer.setGeoJSON(geoJson);
 
         window.setInterval(function(){
             var popup = $(".leaflet-popup-pane");
