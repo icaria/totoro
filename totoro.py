@@ -1,6 +1,6 @@
 import os
 import foursquare
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, redirect, render_template
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -33,13 +33,12 @@ def index():
 
     keys = {
         "mapbox_access_token" : "pk.eyJ1IjoiaWNhcmlhIiwiYSI6ImNpZjczc3I5cTAyb2dyeWx6Z2Mzanlld3cifQ.jBkG4gWBX37zKjrbkX7SRg",
-        "mapbox_map_id": "icaria.cif73spzl02orshlz4eep3nfq",
         "venue": venue['name'],
         "lat": latitude,
         "lng": longitude
     }
 
-    return render_template('index.html', name="Stephen Chen", title="Software Engineer", keys=keys)
+    return render_template('index.html', name="Stephen Chen", title="Software Development Engineer", keys=keys)
 
 
 @app.route('/callback')
