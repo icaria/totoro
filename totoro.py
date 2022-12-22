@@ -5,15 +5,13 @@ from flask import Flask, render_template
 app = Flask(__name__)
 app.config.from_object(__name__)
 
-foursquare_client_id = os.environ.get('foursquare_client_id')
-foursquare_client_secret = os.environ.get('foursquare_client_secret')
+foursquare_access_token = os.environ.get('foursquare_access_token')
 mapbox_access_token = os.environ.get('mapbox_access_token')
 
 
 @app.route('/')
 def index():
-    foursquare_client = foursquare.Foursquare(client_id=foursquare_client_id,
-                                              client_secret=foursquare_client_secret)
+    foursquare_client = foursquare.Foursquare(access_token=foursquare_access_token)
 
     last_check_in = foursquare_client.users.checkins(params={'limit': 1})['checkins']['items'][0]
     venue = last_check_in['venue']
